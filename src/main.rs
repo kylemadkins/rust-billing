@@ -3,7 +3,7 @@ use uuid::Uuid;
 pub struct Bill {
     id: Uuid,
     name: String,
-    amount: u32
+    amount: f64
 }
 
 pub struct Bills {
@@ -11,7 +11,7 @@ pub struct Bills {
 }
 
 impl Bill {
-    fn new(name: String, amount: u32) -> Bill {
+    fn new(name: String, amount: f64) -> Bill {
         Bill {
             id: Uuid::new_v4(),
             name: name,
@@ -78,16 +78,16 @@ mod menu {
         }
     }
 
-    pub fn get_amount() -> Option<u32> {
+    pub fn get_amount() -> Option<f64> {
         loop {
             let amount = match get_input() {
                 Some(input) => input,
                 None => return None
             };
             if &amount == "" {
-                return None
+                return Some(0.0)
             }
-            let parsed_amount: Result<u32, _> = amount.parse();
+            let parsed_amount: Result<f64, _> = amount.parse();
             match parsed_amount {
                 Ok(amount) => return Some(amount),
                 Err(_) => println!("Please enter a number:")
@@ -121,12 +121,19 @@ mod menu {
 
     pub fn view_bills(bills: &Bills) {
         let all_bills = bills.get_all();
-        for bill in all_bills {
+        let count = all_bills.len();
+        if all_bills.len() > 0 {
             println!();
-            println!("ID: {}", bill.id);
-            println!("Name: {}", bill.name);
-            println!("Amount: {:.2}", bill.amount as f64 / 100.0);
+            println!("Number of bills: {}", count);
+            for bill in all_bills {
+                println!();
+                println!("ID: {}", bill.id);
+                println!("Name: {}", bill.name);
+                println!("Amount: ${:.2}", bill.amount);
+            }
+        } else {
             println!();
+            println!("There are no bills");
         }
     }
 
