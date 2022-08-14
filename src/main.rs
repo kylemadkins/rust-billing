@@ -120,7 +120,7 @@ mod menu {
     pub fn view_bills(bills: &Bills) {
         let all_bills = bills.get_all();
         let count = all_bills.len();
-        if all_bills.len() > 0 {
+        if count > 0 {
             println!();
             println!("Number of bills: {}", count);
             for bill in all_bills {
