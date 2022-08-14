@@ -1,12 +1,12 @@
 use uuid::Uuid;
 
-struct Bill {
+pub struct Bill {
     id: Uuid,
     name: String,
     amount: u32
 }
 
-struct Bills {
+pub struct Bills {
     inner: Vec<Bill>
 }
 
@@ -42,6 +42,7 @@ impl Bills {
 
 mod menu {
     use std::io;
+    use crate::{Bill, Bills};
 
     const EXIT_CMD: &str = "exit";
 
@@ -77,6 +78,23 @@ mod menu {
         }
     }
 
+    pub fn get_amount() -> Option<u32> {
+        loop {
+            let amount = match get_input() {
+                Some(input) => input,
+                None => return None
+            };
+            if &amount == "" {
+                return None
+            }
+            let parsed_amount: Result<u32, _> = amount.parse();
+            match parsed_amount {
+                Ok(amount) => return Some(amount),
+                Err(_) => println!("Please enter a number:")
+            };
+        }
+    }
+
     pub fn show() {
         println!();
         println!("== Bill Manager ==");
@@ -86,43 +104,53 @@ mod menu {
         println!();
         println!("Enter a number or type \"{}\": ", EXIT_CMD);
     }
-}
 
-fn add_bill(bills: &mut Vec<Bill>) {
-    println!("Enter a name: ");
-    let name = menu::get_input().unwrap();
-    println!("Enter an amount: ");
-    let amount = menu::get_input().unwrap().parse().unwrap();
-    bills.push(Bill::new(name, amount));
-}
+    pub fn add_bill(bills: &mut Bills) {
+        println!("Enter a name: ");
+        let name = match get_input() {
+            Some(input) => input,
+            None => return
+        };
+        println!("Enter an amount: ");
+        let amount = match get_amount() {
+            Some(input) => input,
+            None => return
+        };
+        bills.add(Bill::new(name, amount));
+    }
 
-fn view_bills(bills: &mut Vec<Bill>) {
-    for bill in bills {
-        println!();
-        println!("ID: {}", bill.id);
-        println!("Name: {}", bill.name);
-        println!("Amount: ${:.2}", bill.amount as f64 / 100.0);
-        println!();
+    pub fn view_bills(bills: &Bills) {
+        let all_bills = bills.get_all();
+        for bill in all_bills {
+            println!();
+            println!("ID: {}", bill.id);
+            println!("Name: {}", bill.name);
+            println!("Amount: {:.2}", bill.amount as f64 / 100.0);
+            println!();
+        }
+    }
+
+    pub fn remove_bill(bills: &mut Bills) {
+        println!("Enter the bill ID: ");
+        let id = match get_input() {
+            Some(input) => input,
+            None => return
+        };
+        bills.remove(id);
     }
 }
 
-fn remove_bill(bills: &mut Vec<Bill>) {
-    println!("Enter the bill ID: ");
-    let id = menu::get_input().unwrap();
-    bills.retain(|bill| bill.id.to_string() != id);
-}
-
 fn main() {
-    let bills = Bills::new();
+    let mut bills = Bills::new();
 
     loop {
         menu::show();
         let input = menu::get_input().expect("No data entered");
         match menu::MenuOption::from_str(&input) {
             Some(menu::MenuOption::Exit) => break,
-            Some(menu::MenuOption::AddBill) => (),
-            Some(menu::MenuOption::ViewBills) => (),
-            Some(menu::MenuOption::RemoveBill) => (),
+            Some(menu::MenuOption::AddBill) => menu::add_bill(&mut bills),
+            Some(menu::MenuOption::ViewBills) => menu::view_bills(&bills),
+            Some(menu::MenuOption::RemoveBill) => menu::remove_bill(&mut bills),
             _ => println!("Invalid option")
         }
     }
