@@ -29,6 +29,7 @@ fn display_menu() {
     println!("== Billing Menu ==");
     println!("1.) Add a bill");
     println!("2.) View bills");
+    println!("3.) Remove a bill");
     println!("Enter a number or type \"{}\": ", EXIT_CMD);
 }
 
@@ -50,6 +51,12 @@ fn view_bills(bills: &mut Vec<Bill>) {
     }
 }
 
+fn remove_bill(bills: &mut Vec<Bill>) {
+    println!("Enter the bill ID: ");
+    let id = get_input().unwrap();
+    bills.retain(|bill| bill.id.to_string() != id);
+}
+
 fn main() {
     let mut bills: Vec<Bill> = vec![];
 
@@ -62,6 +69,7 @@ fn main() {
                     EXIT_CMD => break,
                     "1" => add_bill(&mut bills),
                     "2" => view_bills(&mut bills),
+                    "3" => remove_bill(&mut bills),
                     _ => println!("Invalid option")
                 }
             },
