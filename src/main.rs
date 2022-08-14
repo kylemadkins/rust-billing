@@ -9,6 +9,10 @@ struct Bill {
     amount: u32
 }
 
+struct Bills {
+    inner: Vec<Bill>
+}
+
 impl Bill {
     fn new(name: String, amount: u32) -> Bill {
         Bill {
@@ -16,6 +20,26 @@ impl Bill {
             name: name,
             amount: amount
         }
+    }
+}
+
+impl Bills {
+    fn new() -> Self {
+        Self {
+            inner: vec![]
+        }
+    }
+
+    fn add(&mut self, bill: Bill) {
+        self.inner.push(bill);
+    }
+
+    fn remove(&mut self, id: String) {
+        self.inner.retain(|bill| bill.id.to_string() != id);
+    }
+
+    fn get_all(&self) -> Vec<&Bill> {
+        self.inner.iter().collect()
     }
 }
 
