@@ -1,13 +1,10 @@
-use std::{
-    io,
-    sync::atomic::{AtomicU32, Ordering}
-};
+use std::io;
+use uuid::Uuid;
 
 const EXIT_CMD: &str = "exit";
-static BILL_ID: AtomicU32 = AtomicU32::new(1);
 
 struct Bill {
-    id: u32,
+    id: Uuid,
     name: String,
     amount: u32
 }
@@ -15,7 +12,7 @@ struct Bill {
 impl Bill {
     fn new(name: String, amount: u32) -> Bill {
         Bill {
-            id: BILL_ID.fetch_add(1, Ordering::SeqCst),
+            id: Uuid::new_v4(),
             name: name,
             amount: amount
         }
