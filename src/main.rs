@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use uuid::Uuid;
 
 pub struct Bill {
@@ -7,7 +8,7 @@ pub struct Bill {
 }
 
 pub struct Bills {
-    inner: Vec<Bill>
+    inner: HashMap<Uuid, Bill>
 }
 
 impl Bill {
@@ -23,20 +24,25 @@ impl Bill {
 impl Bills {
     fn new() -> Self {
         Self {
-            inner: vec![]
+            inner: HashMap::new()
         }
     }
 
     fn add(&mut self, bill: Bill) {
-        self.inner.push(bill);
+        self.inner.insert(bill.id, bill);
     }
 
     fn remove(&mut self, id: String) {
-        self.inner.retain(|bill| bill.id.to_string() != id);
+        match Uuid::parse_str(id.as_str()) {
+            Ok(result) => {
+                self.inner.remove(&result);
+            },
+            Err(_) => return
+        }
     }
 
     fn get_all(&self) -> Vec<&Bill> {
-        self.inner.iter().collect()
+        self.inner.values().collect()
     }
 }
 
@@ -157,7 +163,10 @@ fn main() {
             Some(menu::MenuOption::AddBill) => menu::add_bill(&mut bills),
             Some(menu::MenuOption::ViewBills) => menu::view_bills(&bills),
             Some(menu::MenuOption::RemoveBill) => menu::remove_bill(&mut bills),
-            _ => println!("Invalid option")
+            _ => {
+                println!();
+                println!("Invalid option");
+            }
         }
     }
 }
