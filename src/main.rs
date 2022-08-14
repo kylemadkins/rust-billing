@@ -59,7 +59,7 @@ mod menu {
                 "1" => Some(MenuOption::AddBill),
                 "2" => Some(MenuOption::ViewBills),
                 "3" => Some(MenuOption::RemoveBill),
-                "exit" => Some(MenuOption::Exit),
+                EXIT_CMD => Some(MenuOption::Exit),
                 _ => None
             }
         }
