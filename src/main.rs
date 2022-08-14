@@ -82,11 +82,8 @@ mod menu {
         loop {
             let amount = match get_input() {
                 Some(input) => input,
-                None => return None
+                None => return Some(0.0)
             };
-            if &amount == "" {
-                return Some(0.0)
-            }
             let parsed_amount: Result<f64, _> = amount.parse();
             match parsed_amount {
                 Ok(amount) => return Some(amount),
@@ -106,6 +103,7 @@ mod menu {
     }
 
     pub fn add_bill(bills: &mut Bills) {
+        println!();
         println!("Enter a name: ");
         let name = match get_input() {
             Some(input) => input,
@@ -138,6 +136,7 @@ mod menu {
     }
 
     pub fn remove_bill(bills: &mut Bills) {
+        println!();
         println!("Enter the bill ID: ");
         let id = match get_input() {
             Some(input) => input,
